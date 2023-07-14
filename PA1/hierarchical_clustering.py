@@ -25,3 +25,28 @@ def calculate_distance_matrix(data, ord=2):
             distance_matrix[j, i] = distance
 
     return distance_matrix
+
+
+def find_minimum(distance_matrix):
+    """finds the minimum distance in the distance matrix
+
+    Parameters
+    ----------
+    distance_matrix : np.ndarray
+        the distance matrix to search
+
+    Returns
+    -------
+    tuple
+        the indices of the minimum distance
+    """
+
+    min_distance = np.inf
+    min_indices = None
+    for i in range(distance_matrix.shape[0]):
+        for j in range(i + 1, distance_matrix.shape[0]):
+            if distance_matrix[i, j] < min_distance:
+                min_distance = distance_matrix[i, j]
+                min_indices = (i, j)
+
+    return min_indices
