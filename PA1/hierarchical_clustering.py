@@ -1,52 +1,40 @@
 import numpy as np
+from hierarchical_clustering_naive import hierarchical_clustering_naive
+from hierarchical_clustering_mst import hierarchical_clustering_MST
 
 
-def calculate_distance_matrix(data, ord=2):
-    """calculates the distance matrix for the given data, with the given norm
+def hierarchical_clustering(
+    data: np.ndarray, metric: str = "euclidean", type: str = "naive"
+) -> np.ndarray:
+    """facade function for hierarchical clustering.
+    calls the appropriate function based on the type parameter
 
     Parameters
     ----------
     data : np.ndarray
-        the data to calculate the distance matrix for
-    ord : int, optional
-        order of the norm to use. 1 = Manhattan, 2 = Euclidean, by default 2
+        the data to cluster
+    metric : str, optional
+        distance calculation metrix ,by default "euclidean"
+    type : str, optional
+        used type to perform clustering, by default "naive"
 
     Returns
     -------
     np.ndarray
-        the distance matrix
+        the linkage matrix
     """
+    match (metric):
+        case "euclidean":
+            order = 2
+        case "manhattan":
+            order = 1
+        case _:
+            raise ValueError("metric must be either euclidean or manhattan")
 
-    distance_matrix = np.zeros((data.shape[0], data.shape[0]))
-    for i in range(data.shape[0]):
-        for j in range(i + 1, data.shape[0]):
-            distance = np.linalg.norm(data[i] - data[j], ord=ord)
-            distance_matrix[i, j] = distance
-            distance_matrix[j, i] = distance
-
-    return distance_matrix
-
-
-def find_minimum(distance_matrix):
-    """finds the minimum distance in the distance matrix
-
-    Parameters
-    ----------
-    distance_matrix : np.ndarray
-        the distance matrix to search
-
-    Returns
-    -------
-    tuple
-        the indices of the minimum distance
-    """
-
-    min_distance = np.inf
-    min_indices = None
-    for i in range(distance_matrix.shape[0]):
-        for j in range(i + 1, distance_matrix.shape[0]):
-            if distance_matrix[i, j] < min_distance:
-                min_distance = distance_matrix[i, j]
-                min_indices = (i, j)
-
-    return min_indices
+    match (type):
+        case "naive":
+            return hierarchical_clustering_naive(data, order)
+        case "MST":
+            return hierarchical_clustering_MST(data, order)
+        case _:
+            raise ValueError("type must be either 'naive' or ...")
